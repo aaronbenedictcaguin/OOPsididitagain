@@ -5,10 +5,9 @@ import java.awt.*;
 public class Buffer extends Unit {
 
     public Buffer(int x, int y) {
-        this.x = x;
-        this.y = y;
+        this.setPosition(x, y);
 
-        this.name = "Genisis Sage";
+        this.name = "Genesis Sage";
 
         this.maxHp = 1700;
         this.curHp = maxHp;

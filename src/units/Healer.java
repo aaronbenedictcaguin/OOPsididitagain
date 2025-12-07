@@ -5,8 +5,7 @@ import java.awt.*;
 public class Healer extends Unit {
 
     public Healer(int x, int y) {
-        this.x = x;
-        this.y = y;
+        this.setPosition(x, y);
 
         this.name = "Grand Eleanor";
 

@@ -5,7 +5,8 @@ import javax.swing.*;
 public class Main {
     public static void main(String[] args) {
 
-        JFrame frame = new JFrame("Fire Emblem");
+        System.out.println("CLIFFOCDUMP TEST");
+        JFrame frame = new JFrame("game test");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
 

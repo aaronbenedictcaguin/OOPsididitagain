@@ -5,8 +5,7 @@ import java.awt.*;
 public class Tank extends Unit {
 
     public Tank(int x, int y) {
-        this.x = x;
-        this.y = y;
+        this.setPosition(x, y);
 
         this.name = "Cerberus";
 

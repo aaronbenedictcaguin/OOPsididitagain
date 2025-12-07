@@ -5,7 +5,6 @@ import java.awt.*;
 public abstract class Unit {
 
     public int x, y;
-
     public String name;
     public int curHp, maxHp;
     public int atk, magicAtk;

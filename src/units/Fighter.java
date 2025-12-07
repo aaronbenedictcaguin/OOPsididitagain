@@ -5,8 +5,7 @@ import java.awt.*;
 public class Fighter extends Unit {
 
     public Fighter(int x, int y) {
-        this.x = x;
-        this.y = y;
+        this.setPosition(x, y);
 
         this.name = "Rokurou Takahashi";
 

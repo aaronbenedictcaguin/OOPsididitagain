@@ -1,10 +1,8 @@
 package main;
 
-import javax.swing.*;
-
-import units.SelectedTeam;
-
 import java.awt.*;
+import javax.swing.*;
+import units.SelectedTeam;
 
 public class Menu extends JPanel {
 
@@ -50,11 +48,18 @@ public class Menu extends JPanel {
 
             if (SelectedTeam.team != null && SelectedTeam.team.size() == 4) {
                 Board board = new Board(SelectedTeam.team);
+                Input inputHandler = new Input(board);
+
+                board.addMouseListener(inputHandler);
+                board.addMouseMotionListener(inputHandler);
+
                 frame.setContentPane(board);
-                frame.pack();
                 frame.revalidate();
+                frame.pack();
+                board.requestFocusInWindow();
                 frame.repaint();
-            } 
+
+            }
             else {
                 CharacterSelect cs = new CharacterSelect(frame);
                 frame.setContentPane(cs);

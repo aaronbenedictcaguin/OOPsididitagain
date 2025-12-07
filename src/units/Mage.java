@@ -5,8 +5,7 @@ import java.awt.*;
 public class Mage extends Unit {
 
     public Mage(int x, int y) {
-        this.x = x;
-        this.y = y;
+        this.setPosition(x, y);
 
         this.name = "Celestia Presa";
 

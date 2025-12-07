@@ -1,24 +1,24 @@
 package main;
 
-import java.util.*;
-import units.*;
-
-import javax.swing.*;
 import java.awt.*;
+import java.util.*;
+import javax.swing.*;
+import units.Unit;
 
 public class Board extends JPanel {
 
-    public int tileSize = 70;
-    int cols = 10;
+    public int tileSize = 50;
+    int cols = 12;
     int rows = 12;
 
-    int offsetX = 40;
-    int offsetY = 40;
+    public int offsetX = 40;
+    public int offsetY = 40;
 
     ArrayList<Unit> units;
 
-    public Board(ArrayList<Unit> selectedUnits) {
+    public Unit selectedUnit;
 
+    public Board(ArrayList<Unit> selectedUnits) {
         this.units = selectedUnits;
 
         int width = cols * tileSize + offsetX * 2;
@@ -30,8 +30,45 @@ public class Board extends JPanel {
         int startY = 10;
 
         for (int i = 0; i < units.size(); i++) {
+            // setPosition uses grid coordinates (col, row)
             units.get(i).setPosition(startX[i], startY);
         }
+    }
+
+    /**
+     * Finds and returns a Unit at the given grid coordinates.
+     */
+    public Unit getUnit(int col, int row) {
+        for (Unit u : this.units) {
+            // Uses Unit.getX() and Unit.getY(), which return the logical grid coordinates
+            if (u.getX() == col && u.getY() == row) {
+                return u;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Executes a validated Move object, updating the Unit's position and handling
+     * any unit blocking the target tile.
+     */
+    public void makeMove(Move move) {
+
+        // 1. Handle captured/blocked unit removal
+        if (move.block != null) {
+            this.units.remove(move.block);
+        }
+
+        // 2. Update the unit's logical GRID position (col, row)
+        move.u.setPosition(move.new_col, move.new_row);
+
+        // 3. Update the unit's PIXEL position (x, y) to visually snap to the center of the new tile
+        int snapX = this.offsetX + move.new_col * this.tileSize;
+        int snapY = this.offsetY + move.new_row * this.tileSize;
+
+        // Directly updates the public x/y fields (Pixel position)
+        move.u.x = snapX;
+        move.u.y = snapY;
     }
 
     @Override
@@ -56,8 +93,8 @@ public class Board extends JPanel {
         }
 
         for (Unit u : units) {
+            // The unit's draw method uses the current value of u.x and u.y (the PIXEL position)
             u.draw(g2d, tileSize, offsetX, offsetY);
         }
     }
-
 }
