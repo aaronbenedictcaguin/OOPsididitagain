@@ -67,9 +67,8 @@ public class CharacterSelect extends JPanel {
     private void startGame() {
         SelectedTeam.team = chosenUnits;
 
-        Board board = new Board(chosenUnits);
-
-        frame.setContentPane(board);
+        GameScreen game = new GameScreen(frame, chosenUnits);
+        frame.setContentPane(game);
         frame.pack();
         frame.revalidate();
         frame.repaint();

@@ -47,16 +47,10 @@ public class Menu extends JPanel {
         startButton.addActionListener(e -> {
 
             if (SelectedTeam.team != null && SelectedTeam.team.size() == 4) {
-                Board board = new Board(SelectedTeam.team);
-                Input inputHandler = new Input(board);
-
-                board.addMouseListener(inputHandler);
-                board.addMouseMotionListener(inputHandler);
-
-                frame.setContentPane(board);
-                frame.revalidate();
+                GameScreen game = new GameScreen(frame, SelectedTeam.team);
+                frame.setContentPane(game);
                 frame.pack();
-                board.requestFocusInWindow();
+                frame.revalidate();
                 frame.repaint();
 
             }

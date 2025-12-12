@@ -1,11 +1,25 @@
 package main;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
 import units.Unit;
 
+import javax.swing.JPanel;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Board extends JPanel {
+
+    public enum ActionMode {
+        NONE,
+        MOVE,
+        ATTACK
+    }
+
+    public ActionMode currentMode = ActionMode.NONE;
 
     public int tileSize = 50;
     int cols = 12;
@@ -15,11 +29,19 @@ public class Board extends JPanel {
     public int offsetY = 40;
 
     ArrayList<Unit> units;
+    private List<Point> highlights = new ArrayList<>();
 
     public Unit selectedUnit;
+    private ActionPanel actionPanel;
 
+    // optional convenience ctor if old code uses it
     public Board(ArrayList<Unit> selectedUnits) {
+        this(selectedUnits, null);
+    }
+
+    public Board(ArrayList<Unit> selectedUnits, ActionPanel actionPanel) {
         this.units = selectedUnits;
+        this.actionPanel = actionPanel;
 
         int width = cols * tileSize + offsetX * 2;
         int height = rows * tileSize + offsetY * 2;
@@ -29,18 +51,19 @@ public class Board extends JPanel {
         int[] startX = {3, 4, 5, 6};
         int startY = 10;
 
-        for (int i = 0; i < units.size(); i++) {
-            // setPosition uses grid coordinates (col, row)
+        for (int i = 0; i < units.size() && i < startX.length; i++) {
             units.get(i).setPosition(startX[i], startY);
+        }
+
+        if (this.actionPanel != null) {
+            this.actionPanel.setBoard(this);
         }
     }
 
-    /**
-     * Finds and returns a Unit at the given grid coordinates.
-     */
+    // ==== Queries ====
+
     public Unit getUnit(int col, int row) {
         for (Unit u : this.units) {
-            // Uses Unit.getX() and Unit.getY(), which return the logical grid coordinates
             if (u.getX() == col && u.getY() == row) {
                 return u;
             }
@@ -48,28 +71,108 @@ public class Board extends JPanel {
         return null;
     }
 
-    /**
-     * Executes a validated Move object, updating the Unit's position and handling
-     * any unit blocking the target tile.
-     */
-    public void makeMove(Move move) {
+    // ==== Move / Attack execution ====
 
-        // 1. Handle captured/blocked unit removal
+    public void makeMove(Move move) {
         if (move.block != null) {
             this.units.remove(move.block);
         }
-
-        // 2. Update the unit's logical GRID position (col, row)
         move.u.setPosition(move.new_col, move.new_row);
-
-        // 3. Update the unit's PIXEL position (x, y) to visually snap to the center of the new tile
-        int snapX = this.offsetX + move.new_col * this.tileSize;
-        int snapY = this.offsetY + move.new_row * this.tileSize;
-
-        // Directly updates the public x/y fields (Pixel position)
-        move.u.x = snapX;
-        move.u.y = snapY;
+        repaint();
     }
+
+    public void performAttack(Unit attacker, int targetCol, int targetRow) {
+        Unit target = getUnit(targetCol, targetRow);
+        if (target != null && target != attacker) {
+            System.out.println(attacker.name + " attacks " + target.name + " at (" + targetCol + ", " + targetRow + ")");
+            // for now: instant kill
+            units.remove(target);
+            repaint();
+        } else {
+            System.out.println("No valid target to attack at (" + targetCol + ", " + targetRow + ")");
+        }
+    }
+
+    // ==== Highlights & selection ====
+
+    public void setHighlights(List<Point> tiles) {
+        this.highlights = tiles;
+        repaint();
+    }
+
+    public void clearHighlights() {
+        this.highlights.clear();
+        repaint();
+    }
+
+    public void setActionMode(ActionMode mode) {
+        this.currentMode = mode;
+        clearHighlights();
+    }
+
+    public void onUnitSelected(Unit u) {
+        this.selectedUnit = u;
+        if (actionPanel != null) {
+            actionPanel.setSelectedUnit(u);
+        }
+    }
+
+    public void clearSelection() {
+        this.selectedUnit = null;
+        this.currentMode = ActionMode.NONE;
+        clearHighlights();
+        if (actionPanel != null) {
+            actionPanel.clearSelection();
+        }
+    }
+
+    public void showMoveHighlightsFor(Unit unitXY) {
+        List<Point> tiles = new ArrayList<>();
+        int startCol = unitXY.getX();
+        int startRow = unitXY.getY();
+        int moveRange = unitXY.moveRange;
+
+        for (int dx = -moveRange; dx <= moveRange; dx++) {
+            for (int dy = -moveRange; dy <= moveRange; dy++) {
+                int targetCol = startCol + dx;
+                int targetRow = startRow + dy;
+
+                if (targetCol < 0 || targetCol >= cols) continue;
+                if (targetRow < 0 || targetRow >= rows) continue;
+
+                if (ValidateMove.isMoveValid(this, unitXY, targetCol, targetRow)) {
+                    tiles.add(new Point(targetCol, targetRow));
+                }
+            }
+        }
+        setHighlights(tiles);
+    }
+
+    public void showAttackHighlightsFor(Unit unitXY) {
+        List<Point> tiles = new ArrayList<>();
+        int startCol = unitXY.getX();
+        int startRow = unitXY.getY();
+        int range = unitXY.attackRange;
+
+        for (int dx = -range; dx <= range; dx++) {
+            for (int dy = -range; dy <= range; dy++) {
+                int targetCol = startCol + dx;
+                int targetRow = startRow + dy;
+
+                if (dx == 0 && dy == 0) continue; // can't attack self
+                if (targetCol < 0 || targetCol >= cols) continue;
+                if (targetRow < 0 || targetRow >= rows) continue;
+
+                // only highlight tiles that actually have a unit to hit
+                if (getUnit(targetCol, targetRow) != null) {
+                    tiles.add(new Point(targetCol, targetRow));
+                }
+            }
+        }
+        setHighlights(tiles);
+    }
+
+    // ==== Painting ====
 
     @Override
     public void paintComponent(Graphics g) {
@@ -77,23 +180,38 @@ public class Board extends JPanel {
 
         Graphics2D g2d = (Graphics2D) g;
 
+        // board background
         g2d.setColor(Color.WHITE);
         g2d.fillRect(offsetX, offsetY, cols * tileSize, rows * tileSize);
 
+        // grid
         g2d.setColor(Color.BLACK);
-
         for (int r = 0; r <= rows; r++) {
             int y = offsetY + r * tileSize;
             g2d.drawLine(offsetX, y, offsetX + cols * tileSize, y);
         }
-
         for (int c = 0; c <= cols; c++) {
             int x = offsetX + c * tileSize;
             g2d.drawLine(x, offsetY, x, offsetY + rows * tileSize);
         }
 
+        // highlights: blue for move, red for attack
+        if (currentMode == ActionMode.MOVE) {
+            g2d.setColor(new Color(0, 0, 255, 80));
+        } else if (currentMode == ActionMode.ATTACK) {
+            g2d.setColor(new Color(255, 0, 0, 80));
+        } else {
+            g2d.setColor(new Color(0, 0, 255, 80)); // default
+        }
+
+        for (Point p : highlights) {
+            int x = offsetX + p.x * tileSize;
+            int y = offsetY + p.y * tileSize;
+            g2d.fillRect(x + 1, y + 1, tileSize - 2, tileSize - 2);
+        }
+
+        // units
         for (Unit u : units) {
-            // The unit's draw method uses the current value of u.x and u.y (the PIXEL position)
             u.draw(g2d, tileSize, offsetX, offsetY);
         }
     }
