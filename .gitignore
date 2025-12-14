@@ -1,0 +1,15 @@
+# Java compiled output
+bin/
+*.class
+
+# Assets generated at runtime (optional)
+bin/assets/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+
+# OS junk
+.DS_Store
+Thumbs.db

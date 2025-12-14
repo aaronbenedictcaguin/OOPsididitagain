@@ -2,12 +2,15 @@ package units;
 
 import java.awt.*;
 
+import javax.swing.ImageIcon;
+
 public class Tank extends Unit {
 
     public Tank(int x, int y) {
         this.setPosition(x, y);
 
         this.name = "Cerberus";
+        this.role = "Tank";
 
         this.maxHp = 3700;
         this.curHp = maxHp;
@@ -18,6 +21,32 @@ public class Tank extends Unit {
 
         this.moveRange = 1;
         this.attackRange = 1;
+
+        ImageIcon small = new ImageIcon("src/assets/Tank/picSmall.png");
+        ImageIcon large = new ImageIcon("src/assets/Tank/picLarge.png");
+
+        this.picSmall = small.getImage().getScaledInstance(
+            128, 128, Image.SCALE_SMOOTH
+        );
+
+        this.picLarge = large.getImage().getScaledInstance(
+            256, 256, Image.SCALE_SMOOTH
+        );
+
+        this.basicDesc = 
+            "<html><b>Lone Wolf Charge</b>" + "<br>"
+            + "Cerberus summons a wolf to charge upon an enemy dealing around 100% of his attack plus 120% of his magic attack to all enemies."
+        ;
+
+        this.skillDesc =
+            "<html><b>Devil's Maw</b>" + "<br>"
+            + "Cerberus deals damage equal to 50% of his attack to all enemies and increases his defense to 130% of its original value." 
+        ;
+
+        this.ultimateDesc =
+            "<html><b>Absolute Tyranny</b>" + "<br>"
+            + "Cerberus increases all allies' defenses equal to 60% + 68 of his defense." 
+        ;
     }
 
     @Override

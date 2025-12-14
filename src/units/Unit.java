@@ -6,6 +6,7 @@ public abstract class Unit {
 
     public int x, y;
     public String name;
+    public String role;
     public int curHp, maxHp;
     public int atk, magicAtk;
     public int def;
@@ -28,4 +29,11 @@ public abstract class Unit {
         this.x = x;
         this.y = y;
     }
+
+    public Image picSmall;
+    public Image picLarge;
+
+    public String basicDesc;
+    public String skillDesc;
+    public String ultimateDesc;
 }

@@ -2,12 +2,15 @@ package units;
 
 import java.awt.*;
 
+import javax.swing.ImageIcon;
+
 public class Fighter extends Unit {
 
     public Fighter(int x, int y) {
         this.setPosition(x, y);
 
         this.name = "Rokurou Takahashi";
+        this.role = "Fighter";
 
         this.maxHp = 2400;
         this.curHp = maxHp;
@@ -18,6 +21,31 @@ public class Fighter extends Unit {
 
         this.moveRange = 2;
         this.attackRange = 1;
+
+        ImageIcon small = new ImageIcon("src/assets/Fighter/picSmall.png");
+        ImageIcon large = new ImageIcon("src/assets/Fighter/picLarge.png");
+
+        this.picSmall = small.getImage().getScaledInstance(
+            128, 128, Image.SCALE_SMOOTH
+        );
+
+        this.picLarge = large.getImage().getScaledInstance(
+            256, 256, Image.SCALE_SMOOTH
+        );
+
+        this.basicDesc = 
+            "<html><b>Void Slash</b>" + "<br>"
+            + "Rokorou dashes and cuts through a SINGLE enemy dealing 110% of his current attack"
+        ;
+
+        this.skillDesc =
+            "<html><b>Shadows Rise</b>" + "<br>"
+            + "Rokorou garners the might of celestial nothingness to quickly flash forward and deal damage equal to 250% of his attack to an ENEMY and their ADJACENT UNITS." 
+        ;
+        this.ultimateDesc =
+            "<html><b>Event Horizon</b>" + "<br>"
+            + "Rokorou summons the destructiveness of a black hole dealing 350% of his attack + 100% of his magic attack to all enemies on the battlefield" 
+        ;
     }
 
     @Override

@@ -2,12 +2,15 @@ package units;
 
 import java.awt.*;
 
+import javax.swing.ImageIcon;
+
 public class Healer extends Unit {
 
     public Healer(int x, int y) {
         this.setPosition(x, y);
 
         this.name = "Grand Eleanor";
+        this.role = "Healer";
 
         this.maxHp = 2200;
         this.curHp = maxHp;
@@ -18,6 +21,32 @@ public class Healer extends Unit {
 
         this.moveRange = 2;
         this.attackRange = 1;
+
+        ImageIcon small = new ImageIcon("src/assets/Healer/picSmall.png");
+        ImageIcon large = new ImageIcon("src/assets/Healer/picLarge.png");
+
+        this.picSmall = small.getImage().getScaledInstance(
+            128, 128, Image.SCALE_SMOOTH
+        );
+
+        this.picLarge = large.getImage().getScaledInstance(
+            256, 256, Image.SCALE_SMOOTH
+        );
+
+        this.basicDesc = 
+            "<html><b>Light Drive</b>" + "<br>"
+            + "Eleanor slashes her spear to one enemy dealing 130% of her attack plus 20% of her magic attack."
+        ;
+
+        this.skillDesc =
+            "<html><b>Sanctification</b>" + "<br>"
+            + "Eleanor says a magic chant calling upon all seraphim’s blessings. She designates their gifts into one ally, healing them of around 20% + 54 of Eleanor’s Max HP."
+        ;
+
+        this.ultimateDesc =
+            "<html><b>A Promise to Life</b>" + "<br>"
+            + "Eleanor heals all allies an amount equal to 40% of Eleanor’s Max HP." 
+        ;
     }
 
     @Override
