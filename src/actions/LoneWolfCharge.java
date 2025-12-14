@@ -4,7 +4,7 @@ import main.Board;
 import units.Unit;
 
 public class LoneWolfCharge implements Action {
-    public String getName() { return "Queen's Torment"; }
+    public String getName() { return "Lone Wolf Charge"; }
     public int getEnergyCost() { return 0; }
 
     public boolean canTarget(Board b, Unit u, int c, int r) {

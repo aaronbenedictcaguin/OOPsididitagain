@@ -4,7 +4,7 @@ import main.Board;
 import units.Unit;
 
 public class ThePathToSolitude implements Action {
-    public String getName() { return "Enlightenment"; }
+    public String getName() { return "The Path to Solitude"; }
     public int getEnergyCost() { return 4; }
 
     public boolean canTarget(Board b, Unit u, int c, int r) {

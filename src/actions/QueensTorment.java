@@ -14,7 +14,7 @@ public class QueensTorment implements Action {
     public void execute(Board b, Unit u, int c, int r) {
         for (Unit t : b.getUnits())
             if (t.team != u.team)
-                b.applyDamage(t, (int)(u.atk * 0.8));
+                b.applyDamage(t, (int)(u.magicAtk * 0.8));
         u.gainEnergy(2);
     }
 }

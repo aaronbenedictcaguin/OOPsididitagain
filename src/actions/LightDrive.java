@@ -7,7 +7,7 @@ public class LightDrive implements Action {
 
     @Override
     public String getName() {
-        return "Void Slash";
+        return "Light Drive";
     }
 
     @Override

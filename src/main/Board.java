@@ -66,7 +66,7 @@ public class Board extends JPanel {
         e1.maxHp = 800;
         e1.curHp = 800;
         e1.atk = 120;
-        e1.def = 80;
+        e1.def = 0;
 
         Mage e2 = new Mage(6, 8);
         e2.name = "Dummy Enemy 2";
@@ -74,7 +74,7 @@ public class Board extends JPanel {
         e2.maxHp = 1000;
         e2.curHp = 1000;
         e2.atk = 140;
-        e2.def = 100;
+        e2.def = 0;
 
         Mage e3 = new Mage(8, 8);
         e3.name = "Dummy Enemy 3";
@@ -82,7 +82,7 @@ public class Board extends JPanel {
         e3.maxHp = 1200;
         e3.curHp = 1200;
         e3.atk = 160;
-        e3.def = 120;
+        e3.def = 0;
 
         // IMPORTANT: add to same units list
         units.add(e1);
