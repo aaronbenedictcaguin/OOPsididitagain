@@ -8,8 +8,6 @@ import java.awt.event.MouseEvent;
 public class Input extends MouseAdapter {
 
     private final Board board;
-    private int startCol;
-    private int startRow;
 
     public Input(Board board) {
         this.board = board;
@@ -17,15 +15,27 @@ public class Input extends MouseAdapter {
 
     @Override
     public void mousePressed(MouseEvent e) {
+
         int col = (e.getX() - board.offsetX) / board.tileSize;
         int row = (e.getY() - board.offsetY) / board.tileSize;
 
         Unit clickedUnit = board.getUnit(col, row);
 
+        // 🛑 stop animation of previously selected unit
+        if (board.selectedUnit != null) {
+            board.selectedUnit.isWalking = false;
+            board.selectedUnit.walkFrameIndex = 0;
+        }
+
         // === NORMAL SELECTION ===
         if (clickedUnit != null) {
             System.out.println("PRESSED: Unit selected at Grid (" + col + ", " + row + ")");
+
             board.onUnitSelected(clickedUnit);
+
+            // 🔥 START WALK ANIMATION
+            clickedUnit.isWalking = true;
+
         } else {
             if (board.currentMode == Board.ActionMode.NONE) {
                 board.clearSelection();
@@ -33,9 +43,9 @@ public class Input extends MouseAdapter {
         }
     }
 
-
     @Override
     public void mouseReleased(MouseEvent e) {
+
         int targetCol = (e.getX() - board.offsetX) / board.tileSize;
         int targetRow = (e.getY() - board.offsetY) / board.tileSize;
 
@@ -47,6 +57,7 @@ public class Input extends MouseAdapter {
             ", mode = " + board.currentMode
         );
 
+        // ================= MOVE =================
         if (board.currentMode == Board.ActionMode.MOVE) {
 
             if (u.hasActedThisTurn) {
@@ -57,8 +68,12 @@ public class Input extends MouseAdapter {
             if (ValidateMove.isMoveValid(board, u, targetCol, targetRow)) {
                 Move m = new Move(board, u, targetCol, targetRow);
                 board.makeMove(m);
-                u.hasActedThisTurn = true; // MOVE consumes turn
+
+                u.hasActedThisTurn = true;
             }
+
+            u.isWalking = false;
+            u.walkFrameIndex = 0; // back to RK1
 
             board.setActionMode(Board.ActionMode.NONE);
 
@@ -66,7 +81,10 @@ public class Input extends MouseAdapter {
                 board.endTurn();
             }
             return;
-        } else if (board.currentMode == Board.ActionMode.ATTACK) {
+        }
+
+        // ================= ATTACK =================
+        if (board.currentMode == Board.ActionMode.ATTACK) {
 
             if (u.hasActedThisTurn) {
                 System.out.println("Unit already acted this turn.");
@@ -82,9 +100,12 @@ public class Input extends MouseAdapter {
                 if (u.hasEnoughEnergy(cost)) {
                     board.selectedAction.execute(board, u, targetCol, targetRow);
                     u.spendEnergy(cost);
-                    u.hasActedThisTurn = true; // 🔴 ATTACK ENDS TURN
+                    u.hasActedThisTurn = true;
                 }
             }
+
+            u.isWalking = false;
+            u.walkFrameIndex = 0; // RK1
 
             board.selectedAction = null;
             board.setActionMode(Board.ActionMode.NONE);

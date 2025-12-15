@@ -133,7 +133,7 @@ public class CharacterSelect extends JPanel {
         infoBottom.add(skillsBox, BorderLayout.CENTER);
         centerPanel.add(infoBottom, BorderLayout.CENTER);
 
-        startGameBtn = new JButton("START GAME");
+        startGameBtn = new JButton("START!");
         startGameBtn.setPreferredSize(new Dimension(110, 70));
         startGameBtn.setFont(new Font("Arial", Font.BOLD, 14));
 

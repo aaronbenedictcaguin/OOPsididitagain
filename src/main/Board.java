@@ -12,6 +12,8 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class Board extends JPanel {
 
@@ -89,10 +91,16 @@ public class Board extends JPanel {
         units.add(e2);
         units.add(e3);
 
-
         if (this.actionPanel != null) {
             this.actionPanel.setBoard(this);
         }
+
+        new javax.swing.Timer(16, e -> {   // ~60 FPS
+            for (Unit u : units) {
+                u.updateAnimation();
+            }
+            repaint();
+        }).start();
     }
 
     // ==== Queries ====
@@ -142,7 +150,6 @@ public class Board extends JPanel {
 
         repaint();
     }
-
 
     // ==== Highlights & selection ====
 
@@ -304,5 +311,7 @@ public class Board extends JPanel {
     public ArrayList<Unit> getUnits() {
         return units;
     }
+
+    
 
 }

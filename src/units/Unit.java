@@ -54,6 +54,11 @@ public abstract class Unit {
     public String skillDesc;
     public String ultimateDesc;
 
+    public Image[] walkFrames; 
+    public int walkFrameIndex = 0;
+    public boolean isWalking = false;
+    public long lastFrameTime = 0;
+
     public boolean isAlive() {
         return curHp > 0;
     }
@@ -102,5 +107,16 @@ public abstract class Unit {
         }
         return false;
     }
+
+    public void updateAnimation() {
+        if (!isWalking || walkFrames == null) return;
+
+        long now = System.currentTimeMillis();
+        if (now - lastFrameTime > 120) { // ms per frame
+            walkFrameIndex = (walkFrameIndex + 1) % walkFrames.length;
+            lastFrameTime = now;
+        }
+    }
+
 
 }
