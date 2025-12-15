@@ -32,9 +32,9 @@ public class Board extends JPanel {
     public ActionMode currentMode = ActionMode.NONE;
 
     // ===== Board dimensions =====
-    public int tileSize = 40;
-    int cols = 12;
-    int rows = 12;
+    public int tileSize = 50;
+    int cols = 10;
+    int rows = 10;
 
     public int offsetX = 40;
     public int offsetY = 40;
@@ -91,7 +91,7 @@ public class Board extends JPanel {
     private void placeInitialUnits() {
         int[] startX = {3, 4, 5, 6};
 
-        int allyRow = 10;
+        int allyRow = rows - 2;
         int enemyRow = 1;
 
         int allyIndex = 0;
@@ -121,38 +121,28 @@ public class Board extends JPanel {
     private boolean hasAnyEnemies() {
         for (Unit u : units) {
             if (u.team == Unit.Team.ENEMY) return true;
+            }
+            return false;
         }
-        return false;
-    }
 
-    private void spawnDummyEnemies() {
-        Mage e1 = new Mage(4, 8);
+        private void spawnDummyEnemies() {
+        Mage e1 = new Mage(0, 0);
+        Mage e2 = new Mage(0, 0);
+        Mage e3 = new Mage(0, 0);
+
         e1.name = "Dummy Enemy 1";
-        e1.team = Unit.Team.ENEMY;
-        e1.maxHp = 800;
-        e1.curHp = 800;
-        e1.atk = 120;
-        e1.def = 0;
-
-        Mage e2 = new Mage(6, 8);
         e2.name = "Dummy Enemy 2";
-        e2.team = Unit.Team.ENEMY;
-        e2.maxHp = 1000;
-        e2.curHp = 1000;
-        e2.atk = 140;
-        e2.def = 0;
-
-        Mage e3 = new Mage(8, 8);
         e3.name = "Dummy Enemy 3";
+
+        e1.team = Unit.Team.ENEMY;
+        e2.team = Unit.Team.ENEMY;
         e3.team = Unit.Team.ENEMY;
-        e3.maxHp = 1200;
-        e3.curHp = 1200;
-        e3.atk = 160;
-        e3.def = 0;
 
         units.add(e1);
         units.add(e2);
         units.add(e3);
+
+        placeInitialUnits();
     }
 
     // ==============================
