@@ -24,7 +24,7 @@ public class Buffer extends Unit {
         this.maxEnergy = 6;
 
         this.moveRange = 2;
-        this.attackRange = 1;
+        this.attackRange = 10;
 
         ImageIcon small = new ImageIcon("src/assets/Buffer/picSmall.png");
         ImageIcon large = new ImageIcon("src/assets/Buffer/picLarge.png");

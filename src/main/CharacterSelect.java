@@ -1,6 +1,10 @@
 package main;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.*;
 import units.*;
@@ -8,6 +12,9 @@ import units.*;
 public class CharacterSelect extends JPanel {
 
     private JFrame frame;
+    private int playerNumber;           // 1 or 2
+    private ArrayList<Unit> teamP1;     // passed forward
+
     JLabel bigPortrait;
     JLabel nameLabel;
     JLabel statsLabel;
@@ -15,7 +22,7 @@ public class CharacterSelect extends JPanel {
     JLabel skillLabel;
     JLabel ultiLabel;
     JButton addToTeamBtn;
-    JButton startGameBtn;
+    JButton confirmBtn;
 
     private Image background;
     Font headerfont;
@@ -27,10 +34,20 @@ public class CharacterSelect extends JPanel {
 
     private static final int BIG_PORTRAIT_SIZE = 256;
 
-    public CharacterSelect(JFrame frame) {
+    static void deboard(JButton b) {
+        b.setBorder(BorderFactory.createEmptyBorder());
+        b.setBorderPainted(false);
+        b.setFocusPainted(false);
+        b.setContentAreaFilled(false);
+    }
+
+    public CharacterSelect(JFrame frame, int playerNumber, ArrayList<Unit> teamP1) {
         this.frame = frame;
-        this.setBackground(Color.BLACK);
-        this.setLayout(new BorderLayout());
+        this.playerNumber = playerNumber;
+        this.teamP1 = teamP1;
+
+        setBackground(Color.black);
+        setLayout(new BorderLayout());
 
         int tileSize = 70;
         int cols = 10;
@@ -40,37 +57,46 @@ public class CharacterSelect extends JPanel {
 
         int width = cols * tileSize + offsetX * 2;
         int height = rows * tileSize + offsetY * 2;
+        setPreferredSize(new Dimension(width, height));
 
         background = new ImageIcon("src/assets/notsotempbg.png").getImage();
 
-        this.setPreferredSize(new Dimension(width, height));
+        try {
+            headerfont = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/PixelifySans-VariableFont_wght.ttf")).deriveFont(22f);
+            pfont = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/PixelifySans-VariableFont_wght.ttf")).deriveFont(16f);
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+            headerfont = new Font("Serif", Font.BOLD, 36);
+            pfont = new Font("Serif", Font.BOLD, 36);
+        }
 
+        /* ========== LEFT PANEL ========== */
         JPanel leftPanel = new JPanel();
-        leftPanel.setBackground(Color.BLACK);
+        leftPanel.setOpaque(false);
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
-        leftPanel.setBorder(BorderFactory.createEmptyBorder(10,20,10,10));
-        this.add(leftPanel, BorderLayout.WEST);
+        leftPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
+        add(leftPanel, BorderLayout.WEST);
 
         for (Unit u : UnitRegistry.getAllUnits()) {
             JButton portraitBtn = new JButton(new ImageIcon(u.picSmall));
             portraitBtn.setBorderPainted(false);
             portraitBtn.setContentAreaFilled(false);
             portraitBtn.setFocusPainted(false);
-            portraitBtn.setAlignmentX(Component.CENTER_ALIGNMENT);
 
             portraitBtn.addActionListener(e -> {
-                showUnitInfo(u);
                 selectedUnit = u;
+                showUnitInfo(u);
             });
 
             leftPanel.add(portraitBtn);
             leftPanel.add(Box.createVerticalStrut(10));
         }
 
+        /* ========== CENTER PANEL ========== */
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setOpaque(false);
-        centerPanel.setBorder(BorderFactory.createEmptyBorder(20,20,20,20));
-        this.add(centerPanel, BorderLayout.CENTER);
+        centerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        add(centerPanel, BorderLayout.CENTER);
 
         JPanel infoTop = new JPanel(new BorderLayout());
         infoTop.setOpaque(false);
@@ -89,8 +115,8 @@ public class CharacterSelect extends JPanel {
         statsLabel = new JLabel();
         nameLabel.setForeground(Color.WHITE);
         statsLabel.setForeground(Color.WHITE);
-        nameLabel.setFont(new Font("Arial", Font.BOLD, 22));
-        statsLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        nameLabel.setFont(headerfont);
+        statsLabel.setFont(pfont);
 
         statsPanel.add(nameLabel);
         statsPanel.add(Box.createVerticalStrut(10));
@@ -99,6 +125,7 @@ public class CharacterSelect extends JPanel {
         infoTop.add(statsPanel, BorderLayout.CENTER);
         centerPanel.add(infoTop, BorderLayout.NORTH);
 
+        /* ========== SKILLS ========== */
         JPanel infoBottom = new JPanel(new BorderLayout());
         infoBottom.setOpaque(false);
         infoBottom.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 20));
@@ -110,9 +137,9 @@ public class CharacterSelect extends JPanel {
         basicLabel = new JLabel();
         skillLabel = new JLabel();
         ultiLabel = new JLabel();
-        basicLabel.setForeground(Color.WHITE);
-        skillLabel.setForeground(Color.WHITE);
-        ultiLabel.setForeground(Color.WHITE);
+        for (JLabel l : new JLabel[]{basicLabel, skillLabel, ultiLabel}) {
+            l.setForeground(Color.WHITE);
+        }
 
         skillsBox.add(basicLabel);
         skillsBox.add(Box.createVerticalStrut(10));
@@ -122,16 +149,36 @@ public class CharacterSelect extends JPanel {
         skillsBox.add(Box.createVerticalStrut(20));
 
         addToTeamBtn = new JButton("Add to Team");
-        addToTeamBtn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         addToTeamBtn.setVisible(false);
 
         addToTeamBtn.addActionListener(e -> {
             if (selectedUnit == null) return;
-            if (chosenUnits.size() < 4 && !chosenUnits.contains(selectedUnit)) {
-                chosenUnits.add(selectedUnit);
-                int idx = chosenUnits.size() - 1;
-                teamSlots[idx].setIcon(new ImageIcon(selectedUnit.picSmall));
-                teamSlots[idx].setText("");
+            if (chosenUnits.size() >= 4) return;
+
+            Unit copy = selectedUnit.createCopy(); // IMPORTANT
+            chosenUnits.add(copy);
+
+            int idx = chosenUnits.size() - 1;
+            teamSlots[idx].setIcon(new ImageIcon(selectedUnit.picSmall));
+            teamSlots[idx].setText("");
+        });
+
+        addToTeamBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                addToTeamBtn.setText("> Add to Team <");
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                addToTeamBtn.setText("Add to Team");
+            }
+            @Override
+            public void mousePressed(MouseEvent e) {
+                addToTeamBtn.setForeground(new Color(140, 205, 75, 255));
+            }
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                addToTeamBtn.setForeground(Color.WHITE);
             }
         });
 
@@ -139,12 +186,22 @@ public class CharacterSelect extends JPanel {
         infoBottom.add(skillsBox, BorderLayout.CENTER);
         centerPanel.add(infoBottom, BorderLayout.CENTER);
 
-        startGameBtn = new JButton("START!");
-        startGameBtn.setPreferredSize(new Dimension(110, 70));
-        startGameBtn.setFont(new Font("Arial", Font.BOLD, 14));
+        /* ========== BOTTOM ========== */
+        confirmBtn = new JButton(playerNumber == 1 ? "READY" : "START");
+        confirmBtn.setPreferredSize(new Dimension(110, 70));
+        confirmBtn.setFont(headerfont);
 
-        startGameBtn.addActionListener(e -> {
-            if (!chosenUnits.isEmpty()) startGame();
+        confirmBtn.addActionListener(e -> confirmTeam());
+
+        confirmBtn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                confirmBtn.setText(playerNumber == 1 ? "READY?" : "START!");
+            }
+            @Override
+            public void mouseExited(MouseEvent e) {
+                confirmBtn.setText(playerNumber == 1 ? "READY" : "START");
+            }
         });
 
         JPanel bottomContainer = new JPanel(new BorderLayout());
@@ -157,42 +214,51 @@ public class CharacterSelect extends JPanel {
 
         JLabel teamHeader = new JLabel("YOUR TEAM MEMBERS:");
         teamHeader.setForeground(Color.WHITE);
-        teamHeader.setFont(new Font("Arial", Font.BOLD, 20));
+        teamHeader.setFont(headerfont);
         teamHeader.setAlignmentX(Component.CENTER_ALIGNMENT);
+        bottomContainer.setOpaque(false);
+        bottomContainer.setBorder(BorderFactory.createEmptyBorder(5, 20, 10, 20));
 
         JPanel slotsRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        slotsRow.setBackground(Color.BLACK);
+        slotsRow.setOpaque(false);
 
         for (int i = 0; i < 4; i++) {
-            JLabel slot = new JLabel("[Empty]", SwingConstants.CENTER);
+            JLabel slot = new JLabel("", SwingConstants.CENTER);
             slot.setPreferredSize(new Dimension(120, 120));
-            slot.setOpaque(true);
-            slot.setBackground(Color.DARK_GRAY);
-            slot.setForeground(Color.WHITE);
-
-            int idx = i;
-            slot.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseClicked(java.awt.event.MouseEvent e) {
-                    removeUnitFromTeam(idx);
-                }
-            });
-
+            slot.setOpaque(false);
+            // slot.setForeground(Color.WHITE);
             teamSlots[i] = slot;
             slotsRow.add(slot);
         }
 
-        bottomPanel.add(teamHeader);
-        bottomPanel.add(Box.createVerticalStrut(10));
-        bottomPanel.add(slotsRow);
+        bottomContainer.add(slotsRow, BorderLayout.CENTER);
+        bottomContainer.add(confirmBtn, BorderLayout.EAST);
+        add(bottomContainer, BorderLayout.SOUTH);
 
-        JPanel startPanel = new JPanel(new GridBagLayout());
-        startPanel.setBackground(Color.BLACK);
-        startPanel.add(startGameBtn);
+        deboard(addToTeamBtn);
+        deboard(confirmBtn);
+    }
 
-        bottomContainer.add(bottomPanel, BorderLayout.CENTER);
-        bottomContainer.add(startPanel, BorderLayout.EAST);
+    /* ================= LOGIC ================= */
 
-        this.add(bottomContainer, BorderLayout.SOUTH);
+    private void confirmTeam() {
+        if (chosenUnits.size() != 4) return;
+
+        if (playerNumber == 1) {
+            for (Unit u : chosenUnits) u.team = Unit.Team.ALLY;
+            teamP1.addAll(chosenUnits);
+
+            frame.setContentPane(new CharacterSelect(frame, 2, teamP1));
+        } else {
+            for (Unit u : chosenUnits) u.team = Unit.Team.ENEMY;
+
+            GameScreen game = new GameScreen(frame, teamP1, chosenUnits);
+            frame.setContentPane(game);
+        }
+
+        frame.pack();
+        frame.revalidate();
+        frame.repaint();
     }
 
     @Override
@@ -206,19 +272,25 @@ public class CharacterSelect extends JPanel {
 
     private void showUnitInfo(Unit u) {
         bigPortrait.setIcon(new ImageIcon(
-            u.picLarge.getScaledInstance(BIG_PORTRAIT_SIZE, BIG_PORTRAIT_SIZE, Image.SCALE_SMOOTH)
+                u.picLarge.getScaledInstance(
+                        BIG_PORTRAIT_SIZE,
+                        BIG_PORTRAIT_SIZE,
+                        Image.SCALE_SMOOTH
+                )
         ));
 
-        nameLabel.setText(u.name);
+        basicLabel.setFont(pfont);
+        skillLabel.setFont(pfont);
+        ultiLabel.setFont(pfont);
+
+        nameLabel.setText("<html>" + u.name + "</html>");
         statsLabel.setText(
-            "<html>Role: " + u.role + "<br><br>"
-            + "HP: " + u.maxHp + "<br>"
-            + "ATK: " + u.atk + "<br>"
-            + "Magic ATK: " + u.magicAtk + "<br>"
-            + "DEF: " + u.def + "<br>"
-            + "Energy: " + u.energy + "<br><br>"
-            + "Move Range: " + u.moveRange + "<br>"
-            + "Attack Range: " + u.attackRange + "</html>"
+                "<html>Role: " + u.role + "<br><br>"
+                        + "HP: " + u.maxHp + "<br>"
+                        + "ATK: " + u.atk + "<br>"
+                        + "DEF: " + u.def + "<br>"
+                        + "Move: " + u.moveRange + "<br>"
+                        + "Range: " + u.attackRange + "</html>"
         );
 
         basicLabel.setText("<html><b>Basic:</b> " + u.basicDesc + "</html>");
@@ -226,37 +298,5 @@ public class CharacterSelect extends JPanel {
         ultiLabel.setText("<html><b>Ultimate:</b> " + u.ultimateDesc + "</html>");
 
         addToTeamBtn.setVisible(true);
-    }
-
-    private void startGame() {
-        if (chosenUnits.size() != 4) return;
-
-        for (Unit u : chosenUnits) {
-            u.team = Unit.Team.ALLY;
-        }
-
-        SelectedTeam.team = chosenUnits;
-
-        GameScreen game = new GameScreen(frame, SelectedTeam.team);
-        frame.setContentPane(game);
-        frame.pack();
-        frame.revalidate();
-        frame.repaint();
-    }
-
-    private void removeUnitFromTeam(int index) {
-        if (index >= chosenUnits.size()) return;
-        chosenUnits.remove(index);
-
-        for (int i = 0; i < 4; i++) {
-            if (i < chosenUnits.size()) {
-                teamSlots[i].setIcon(new ImageIcon(chosenUnits.get(i).picSmall));
-                teamSlots[i].setText("");
-            } else {
-                teamSlots[i].setIcon(null);
-                teamSlots[i].setText("[Empty]");
-                teamSlots[i].setBackground(Color.DARK_GRAY);
-            }
-        }
     }
 }

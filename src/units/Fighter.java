@@ -23,8 +23,8 @@ public class Fighter extends Unit {
         this.energy = 2;
         this.maxEnergy = 4;
 
-        this.moveRange = 2;
-        this.attackRange = 1;
+        this.moveRange = 5;
+        this.attackRange = 2;
 
         ImageIcon small = new ImageIcon("src/assets/Fighter/picSmall.png");
         ImageIcon large = new ImageIcon("src/assets/Fighter/picLarge.png");
