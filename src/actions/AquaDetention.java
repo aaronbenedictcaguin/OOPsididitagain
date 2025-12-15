@@ -29,7 +29,7 @@ public class AquaDetention implements Action {
             // NORMAL delayed version
             u.def /= 2;
 
-            u.addStatus(new DelayedSpellStatus(1, () -> {
+            u.addStatus(new DelayedSpellStatus(3, () -> {
                 for (Unit t : b.getUnits()) {
                     if (t.team != u.team) {
                         b.applyDamage(t, (int)(u.magicAtk * 1.2));

@@ -24,7 +24,7 @@ public class Tank extends Unit {
         this.maxEnergy = 5;
 
         this.moveRange = 1;
-        this.attackRange = 1;
+        this.attackRange = 10;
 
         ImageIcon small = new ImageIcon("src/assets/Tank/picSmall.png");
         ImageIcon large = new ImageIcon("src/assets/Tank/picLarge.png");
