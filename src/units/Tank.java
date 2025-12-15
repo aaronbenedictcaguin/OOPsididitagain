@@ -55,14 +55,6 @@ public class Tank extends Unit {
         this.actions.add(new LoneWolfCharge());
         this.actions.add(new DevilsMaw());
         this.actions.add(new AbsoluteTyranny());
-
-        walkFrames = new Image[5];
-
-        for (int i = 0; i < 5; i++) {
-            walkFrames[i] = new ImageIcon(
-                "src/assets/Tank/walk/C" + (i + 1) + ".png"
-            ).getImage();
-        }
     }
 
     @Override
@@ -83,4 +75,24 @@ public class Tank extends Unit {
             null
         );
     }
+
+    @Override
+    public void loadWalkSprites() {
+
+        walkFrames = new Image[5];
+
+        String basePath;
+        if (team == Team.ALLY) {
+            basePath = "src/assets/Tank/player1/walk/C";
+        } else {
+            basePath = "src/assets/Tank/player2/walk/CE";
+        }
+
+        for (int i = 0; i < 5; i++) {
+            walkFrames[i] = new ImageIcon(
+                basePath + (i + 1) + ".png"
+            ).getImage();
+        }
+    }
+
 }

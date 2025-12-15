@@ -59,13 +59,6 @@ public class Buffer extends Unit {
         this.actions.add(new ForbiddenKnowledge());
         this.actions.add(new Enlightenment());
         this.actions.add(new ThePathToSolitude());
-        walkFrames = new Image[8];
-
-        for (int i = 0; i < 8; i++) {
-            walkFrames[i] = new ImageIcon(
-                "src/assets/Buffer/walk/GS" + (i + 1) + ".png"
-            ).getImage();
-        }
     }
 
     @Override
@@ -86,4 +79,24 @@ public class Buffer extends Unit {
             null
         );
     }
+
+    @Override
+    public void loadWalkSprites() {
+
+        walkFrames = new Image[8];
+
+        String basePath;
+        if (team == Team.ALLY) {
+            basePath = "src/assets/Buffer/player1/walk/GS";
+        } else {
+            basePath = "src/assets/Buffer/player2/walk/GSE";
+        }
+
+        for (int i = 0; i < 8; i++) {
+            walkFrames[i] = new ImageIcon(
+                basePath + (i + 1) + ".png"
+            ).getImage();
+        }
+    }
+
 }

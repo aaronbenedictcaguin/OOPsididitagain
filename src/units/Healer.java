@@ -55,14 +55,6 @@ public class Healer extends Unit {
         this.actions.add(new LightDrive());
         this.actions.add(new Sanctification());
         this.actions.add(new APromiseToLife());
-        
-        walkFrames = new Image[8];
-
-        for (int i = 0; i < 8; i++) {
-            walkFrames[i] = new ImageIcon(
-                "src/assets/Healer/walk/GE" + (i + 1) + ".png"
-            ).getImage();
-        }
     }
 
     @Override
@@ -83,4 +75,24 @@ public class Healer extends Unit {
             null
         );
     }
+
+    @Override
+    public void loadWalkSprites() {
+
+        walkFrames = new Image[8];
+
+        String basePath;
+        if (team == Team.ALLY) {
+            basePath = "src/assets/Healer/player1/walk/GE";
+        } else {
+            basePath = "src/assets/Healer/player2/walk/GEE";
+        }
+
+        for (int i = 0; i < 8; i++) {
+            walkFrames[i] = new ImageIcon(
+                basePath + (i + 1) + ".png"
+            ).getImage();
+        }
+    }
+
 }

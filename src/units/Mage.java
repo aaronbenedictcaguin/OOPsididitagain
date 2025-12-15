@@ -54,14 +54,6 @@ public class Mage extends Unit {
         this.actions.add(new QueensTorment());
         this.actions.add(new AquaDetention());
         this.actions.add(new LeviathanWill());
-
-        walkFrames = new Image[8];
-
-        for (int i = 0; i < 8; i++) {
-            walkFrames[i] = new ImageIcon(
-                "src/assets/Mage/walk/CP" + (i + 1) + ".png"
-            ).getImage();
-        }
     }
 
     @Override
@@ -82,4 +74,24 @@ public class Mage extends Unit {
             null
         );
     }
+
+    @Override
+    public void loadWalkSprites() {
+
+        walkFrames = new Image[8];
+
+        String basePath;
+        if (team == Team.ALLY) {
+            basePath = "src/assets/Mage/player1/walk/CP";
+        } else {
+            basePath = "src/assets/Mage/player2/walk/CPE";
+        }
+
+        for (int i = 0; i < 8; i++) {
+            walkFrames[i] = new ImageIcon(
+                basePath + (i + 1) + ".png"
+            ).getImage();
+        }
+    }
+
 }

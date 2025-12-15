@@ -242,24 +242,31 @@ public class CharacterSelect extends JPanel {
     /* ================= LOGIC ================= */
 
     private void confirmTeam() {
-        if (chosenUnits.size() != 4) return;
+    if (chosenUnits.size() != 4) return;
 
-        if (playerNumber == 1) {
-            for (Unit u : chosenUnits) u.team = Unit.Team.ALLY;
-            teamP1.addAll(chosenUnits);
+    if (playerNumber == 1) {
+        for (Unit u : chosenUnits) {
+            u.team = Unit.Team.ALLY;
+            u.loadWalkSprites();   // 👈 ADD THIS LINE
+        }
+        teamP1.addAll(chosenUnits);
 
-            frame.setContentPane(new CharacterSelect(frame, 2, teamP1));
-        } else {
-            for (Unit u : chosenUnits) u.team = Unit.Team.ENEMY;
-
-            GameScreen game = new GameScreen(frame, teamP1, chosenUnits);
-            frame.setContentPane(game);
+        frame.setContentPane(new CharacterSelect(frame, 2, teamP1));
+    } else {
+        for (Unit u : chosenUnits) {
+            u.team = Unit.Team.ENEMY;
+            u.loadWalkSprites();   // 👈 ADD THIS LINE
         }
 
-        frame.pack();
-        frame.revalidate();
-        frame.repaint();
+        GameScreen game = new GameScreen(frame, teamP1, chosenUnits);
+        frame.setContentPane(game);
     }
+
+    frame.pack();
+    frame.revalidate();
+    frame.repaint();
+}
+
 
     @Override
     protected void paintComponent(Graphics g) {

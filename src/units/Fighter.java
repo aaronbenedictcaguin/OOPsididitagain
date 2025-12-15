@@ -54,14 +54,6 @@ public class Fighter extends Unit {
         this.actions.add(new VoidSlash());
         this.actions.add(new ShadowsRise());
         this.actions.add(new EventHorizon());
-
-        walkFrames = new Image[8];
-
-        for (int i = 0; i < 8; i++) {
-            walkFrames[i] = new ImageIcon(
-                "src/assets/Fighter/walk/RK" + (i + 1) + ".png"
-            ).getImage();
-        }
     }
 
     @Override
@@ -82,5 +74,25 @@ public class Fighter extends Unit {
             null
         );
     }
+
+    @Override
+    public void loadWalkSprites() {
+
+        walkFrames = new Image[8];
+
+        String basePath;
+        if (team == Team.ALLY) {
+            basePath = "src/assets/Fighter/player1/walk/RK";
+        } else {
+            basePath = "src/assets/Fighter/player2/walk/RKE";
+        }
+
+        for (int i = 0; i < 8; i++) {
+            walkFrames[i] = new ImageIcon(
+                basePath + (i + 1) + ".png"
+            ).getImage();
+        }
+    }
+
     
 }
