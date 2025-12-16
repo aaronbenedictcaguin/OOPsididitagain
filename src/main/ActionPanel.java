@@ -6,6 +6,7 @@ import javax.swing.*;
 import units.Unit;
 
 public class ActionPanel extends JPanel {
+
     private JLabel turnLabel;
     private JLabel nameLabel;
     private JLabel hpLabel;
@@ -18,14 +19,18 @@ public class ActionPanel extends JPanel {
     private JButton attackButton;
 
     private Unit selectedUnit;
-    private Board board;  // set from outside
+    private Board board;
+
+    private JLabel portraitLabel;
 
     public ActionPanel() {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         setBackground(Color.DARK_GRAY);
 
-        turnLabel = new JLabel("Turn: Player 1 (ALLY)");
+        /* ================= TURN LABEL ================= */
+
+        turnLabel = new JLabel("");
         turnLabel.setForeground(Color.WHITE);
         turnLabel.setFont(new Font("Arial", Font.BOLD, 16));
 
@@ -35,31 +40,57 @@ public class ActionPanel extends JPanel {
 
         add(turnPanel, BorderLayout.NORTH);
 
+        /* ================= STATS PANEL ================= */
 
-        // === STATS AREA ===
         JPanel statsPanel = new JPanel();
-        statsPanel.setLayout(new GridLayout(0, 1));
+        statsPanel.setLayout(new BoxLayout(statsPanel, BoxLayout.Y_AXIS));
         statsPanel.setOpaque(false);
 
         nameLabel = new JLabel("No unit selected");
-        hpLabel   = new JLabel("HP: -");
-        atkLabel  = new JLabel("ATK: -");
-        magicAtkLabel  = new JLabel("MAGIC ATK: -");
-        defLabel  = new JLabel("DEF: -");
+        hpLabel = new JLabel("HP: -");
+        atkLabel = new JLabel("ATK: -");
+        magicAtkLabel = new JLabel("MAGIC ATK: -");
+        defLabel = new JLabel("DEF: -");
         energyLabel = new JLabel("Energy: -");
 
-        for (JLabel l : new JLabel[]{nameLabel, hpLabel, atkLabel, magicAtkLabel, defLabel, energyLabel}) {
+        // Fonts
+        nameLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        hpLabel.setFont(new Font("Arial", Font.BOLD, 14));
+
+        // Colors
+        for (JLabel l : new JLabel[]{
+                nameLabel, hpLabel, atkLabel, magicAtkLabel, defLabel, energyLabel
+        }) {
             l.setForeground(Color.WHITE);
         }
 
-        statsPanel.add(nameLabel);
-        statsPanel.add(hpLabel);
-        statsPanel.add(atkLabel);
-        statsPanel.add(magicAtkLabel);
-        statsPanel.add(defLabel);
-        statsPanel.add(energyLabel);
+        // === ROW 1: NAME + HP ===
+        JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
+        row1.setOpaque(false);
+        row1.add(nameLabel);
+        row1.add(hpLabel);
 
-        // === ACTION BUTTONS ===
+        // === ROW 2: ATK + MAGIC ATK ===
+        JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
+        row2.setOpaque(false);
+        row2.add(atkLabel);
+        row2.add(magicAtkLabel);
+
+        // === ROW 3: DEF + ENERGY ===
+        JPanel row3 = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
+        row3.setOpaque(false);
+        row3.add(defLabel);
+        row3.add(energyLabel);
+
+        statsPanel.add(row1);
+        statsPanel.add(Box.createVerticalStrut(6));
+        statsPanel.add(row2);
+        statsPanel.add(Box.createVerticalStrut(6));
+        statsPanel.add(row3);
+        statsPanel.add(Box.createVerticalStrut(10));
+
+        /* ================= BUTTONS ================= */
+
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setOpaque(false);
 
@@ -72,10 +103,13 @@ public class ActionPanel extends JPanel {
         buttonsPanel.add(moveButton);
         buttonsPanel.add(attackButton);
 
-        add(statsPanel, BorderLayout.CENTER);
-        add(buttonsPanel, BorderLayout.WEST);
+        /* === PORTRAIT === */
+        portraitLabel = new JLabel();
+        portraitLabel.setPreferredSize(new Dimension(96, 96));
+        portraitLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        portraitLabel.setVerticalAlignment(SwingConstants.CENTER);
 
-        // === BUTTON LOGIC ===
+        /* ================= BUTTON LOGIC ================= */
 
         moveButton.addActionListener(e -> {
             if (selectedUnit == null || board == null) return;
@@ -84,12 +118,10 @@ public class ActionPanel extends JPanel {
             board.showMoveHighlightsFor(selectedUnit);
         });
 
-
         attackButton.addActionListener(e -> {
             if (selectedUnit == null || board == null) return;
             if (selectedUnit.hasActedThisTurn) return;
             if (selectedUnit.team != board.currentTurn) return;
-
             if (selectedUnit.actions == null || selectedUnit.actions.isEmpty()) return;
 
             JPopupMenu menu = new JPopupMenu();
@@ -98,18 +130,13 @@ public class ActionPanel extends JPanel {
                 Action a = selectedUnit.actions.get(i);
 
                 String prefix;
-                if (i == 0) {
-                    prefix = "Basic: ";
-                } else if (i == 1) {
-                    prefix = "Skill: ";
-                } else if (i == 2) {
-                    prefix = "Ultimate: ";
-                } else {
-                    prefix = "";
-                }
+                if (i == 0) prefix = "Basic: ";
+                else if (i == 1) prefix = "Skill: ";
+                else if (i == 2) prefix = "Ultimate: ";
+                else prefix = "";
 
                 JMenuItem item = new JMenuItem(
-                    prefix + a.getName() + " (" + a.getEnergyCost() + ")"
+                        prefix + a.getName() + " (" + a.getEnergyCost() + ")"
                 );
 
                 item.setEnabled(selectedUnit.energy >= a.getEnergyCost());
@@ -126,7 +153,24 @@ public class ActionPanel extends JPanel {
             menu.show(attackButton, 0, attackButton.getHeight());
         });
 
+        JPanel mainRow = new JPanel();
+        mainRow.setOpaque(false);
+        mainRow.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 0));
 
+        mainRow.add(portraitLabel);
+        mainRow.add(statsPanel);
+
+        add(mainRow, BorderLayout.CENTER);
+
+        JPanel contentPanel = new JPanel();
+        contentPanel.setOpaque(false);
+        contentPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 0));
+
+        contentPanel.add(portraitLabel);
+        contentPanel.add(statsPanel);
+
+        add(contentPanel, BorderLayout.CENTER);
+        add(buttonsPanel, BorderLayout.EAST);
     }
 
     public void setBoard(Board board) {
@@ -135,9 +179,8 @@ public class ActionPanel extends JPanel {
 
     public void setCurrentTurn(units.Unit.Team team) {
         String player = (team == units.Unit.Team.ALLY) ? "Player 1" : "Player 2";
-        turnLabel.setText("Turn: " + player + " (" + team + ")");
+        //turnLabel.setText("Turn: " + player + " (" + team + ")");
     }
-
 
     public void setSelectedUnit(Unit u) {
         this.selectedUnit = u;
@@ -148,6 +191,10 @@ public class ActionPanel extends JPanel {
             atkLabel.setText("ATK: -");
             magicAtkLabel.setText("MAGIC ATK: -");
             defLabel.setText("DEF: -");
+            energyLabel.setText("Energy: -");
+
+            portraitLabel.setIcon(null);
+
             moveButton.setEnabled(false);
             attackButton.setEnabled(false);
         } else {
@@ -156,9 +203,14 @@ public class ActionPanel extends JPanel {
             atkLabel.setText("ATK: " + u.atk);
             magicAtkLabel.setText("MAGIC ATK: " + u.magicAtk);
             defLabel.setText("DEF: " + u.def);
+            energyLabel.setText("Energy: " + u.energy + " / " + u.maxEnergy);
+
+            portraitLabel.setIcon(new ImageIcon(
+                u.picSmall.getScaledInstance(96, 96, Image.SCALE_SMOOTH)
+            ));
+
             moveButton.setEnabled(true);
             attackButton.setEnabled(true);
-            energyLabel.setText("Energy: " + u.energy + " / " + u.maxEnergy);
         }
     }
 

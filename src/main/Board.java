@@ -426,7 +426,6 @@ public class Board extends JPanel {
         // draw turn text in black margin
         g2d.setColor(Color.WHITE);
         String player = (currentTurn == Unit.Team.ALLY) ? "Player 1" : "Player 2";
-        g2d.drawString("Turn: " + player + " (" + currentTurn + ")", 10, 20);
 
         // grid
         g2d.setColor(Color.BLACK);
