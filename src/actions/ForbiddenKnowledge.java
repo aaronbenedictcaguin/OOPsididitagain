@@ -13,13 +13,19 @@ public class ForbiddenKnowledge implements Action {
         return true;
     }
 
+    public TargetType getTargetType() {
+        return TargetType.ENEMY;
+    }
+
     public void execute(Board b, Unit u, int c, int r) {
         List<Unit> snapshot = new ArrayList<>(b.getUnits());
 
-        for (Unit t : snapshot) {
-            if (t.team != u.team)
-                b.applyDamage(t, (int)(u.atk * 0.6) + (int)(u.magicAtk * 0.6));
-        }
+        Unit target = b.getUnit(c, r);
+        if (target == null) return;
+
+        int damage = (int)(u.atk * 1.3) + (int)(u.magicAtk * 0.2);
+        b.applyDamage(target, damage);
+        
         u.gainEnergy(2);
     }
 }

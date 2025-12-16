@@ -13,6 +13,9 @@ public class APromiseToLife implements Action {
         return true;
     }
 
+    public TargetType getTargetType() {
+        return TargetType.ALLY;
+    }
 
     public void execute(Board b, Unit u, int c, int r) {
 

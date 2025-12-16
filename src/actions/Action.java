@@ -5,6 +5,13 @@ import units.Unit;
 
 public interface Action {
 
+    enum TargetType {
+        ENEMY,
+        ALLY,
+        SELF,
+        GLOBAL
+    }
+
     String getName();
 
     int getEnergyCost();
@@ -14,4 +21,6 @@ public interface Action {
 
     // What happens when the action is used
     void execute(Board board, Unit user, int col, int row);
+
+    TargetType getTargetType();
 }

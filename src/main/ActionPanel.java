@@ -155,9 +155,38 @@ public class ActionPanel extends JPanel {
 
                 item.addActionListener(ev -> {
                     board.selectedAction = a;
-                    board.setActionMode(Board.ActionMode.ATTACK);
-                    board.showAttackHighlightsFor(selectedUnit);
+
+                    Action.TargetType type = a.getTargetType();
+
+                    if (type == Action.TargetType.ENEMY) {
+                        board.setActionMode(Board.ActionMode.ATTACK);
+                        board.showAttackHighlightsFor(selectedUnit);
+
+                    } else if (type == Action.TargetType.ALLY) {
+                        board.setActionMode(Board.ActionMode.ALLY_TARGET);
+                        board.showAllyHighlightsFor(selectedUnit);
+
+                    } else if (type == Action.TargetType.SELF) {
+                        // Execute immediately on self
+                        a.execute(
+                            board,
+                            selectedUnit,
+                            selectedUnit.getX(),
+                            selectedUnit.getY()
+                        );
+
+                        selectedUnit.hasActedThisTurn = true;
+                        board.setActionMode(Board.ActionMode.NONE);
+
+                    } else if (type == Action.TargetType.GLOBAL) {
+                        // Execute immediately, no target
+                        a.execute(board, selectedUnit, -1, -1);
+
+                        selectedUnit.hasActedThisTurn = true;
+                        board.setActionMode(Board.ActionMode.NONE);
+                    }
                 });
+
 
                 menu.add(item);
             }

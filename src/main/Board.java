@@ -24,7 +24,8 @@ public class Board extends JPanel {
     public enum ActionMode {
         NONE,
         MOVE,
-        ATTACK
+        ATTACK,
+        ALLY_TARGET
     }
 
     private String logActionName = null;
@@ -493,12 +494,15 @@ public class Board extends JPanel {
         }
 
         if (currentMode == ActionMode.MOVE) {
-            g2d.setColor(new Color(0, 0, 255, 80));
-        } else if (currentMode == ActionMode.ATTACK) {
-            g2d.setColor(new Color(255, 0, 0, 80));
-        } else {
-            g2d.setColor(new Color(0, 0, 255, 80));
+            g2d.setColor(new Color(0, 0, 255, 80)); // blue
+        } 
+        else if (currentMode == ActionMode.ATTACK) {
+            g2d.setColor(new Color(255, 0, 0, 80)); // red
         }
+        else if (currentMode == ActionMode.ALLY_TARGET) {
+            g2d.setColor(new Color(255, 255, 0, 80)); // 🟡 yellow
+        }
+
 
         for (Point p : highlights) {
             int x = offsetX + p.x * tileSize;
@@ -525,4 +529,17 @@ public class Board extends JPanel {
     public ArrayList<Unit> getUnits() {
         return units;
     }
+
+    public void showAllyHighlightsFor(Unit unitXY) {
+        List<Point> tiles = new ArrayList<>();
+
+        for (Unit u : units) {
+            if (u.team == unitXY.team && u.isAlive()) {
+                tiles.add(new Point(u.getX(), u.getY()));
+            }
+        }
+
+        setHighlights(tiles);
+    }
+
 }

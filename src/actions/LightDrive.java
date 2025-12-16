@@ -24,6 +24,10 @@ public class LightDrive implements Action {
                Math.abs(user.getY() - row) <= user.attackRange;
     }
 
+    public TargetType getTargetType() {
+        return TargetType.ENEMY;
+    }
+
     @Override
     public void execute(Board board, Unit user, int col, int row) {
         Unit target = board.getUnit(col, row);

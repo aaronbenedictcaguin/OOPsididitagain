@@ -55,7 +55,6 @@ public class Buffer extends Unit {
             "<html><b>The Path to Solitude</b><br>"
             + "Genesis grants one ally 4 points of energy.";
 
-        // === SKILL LOGIC (GAMEPLAY) ===
         this.actions.add(new ForbiddenKnowledge());
         this.actions.add(new Enlightenment());
         this.actions.add(new ThePathToSolitude());

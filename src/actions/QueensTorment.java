@@ -13,6 +13,10 @@ public class QueensTorment implements Action {
         return true;
     }
 
+    public TargetType getTargetType() {
+        return TargetType.ENEMY;
+    }
+
     public void execute(Board b, Unit u, int c, int r) {
         List<Unit> snapshot = new ArrayList<>(b.getUnits());
 

@@ -15,6 +15,10 @@ public class AquaDetention implements Action {
         return true;
     }
 
+    public TargetType getTargetType() {
+        return TargetType.ENEMY;
+    }
+
     @Override
     public void execute(Board b, Unit u, int c, int r) {
 

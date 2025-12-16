@@ -100,8 +100,6 @@ public class Input extends MouseAdapter {
         // ================= ATTACK =================
         if (board.currentMode == Board.ActionMode.ATTACK) {
 
-
-
             if (u.hasActedThisTurn) {
                 System.out.println("Unit already acted this turn.");
                 board.setActionMode(Board.ActionMode.NONE);
@@ -118,7 +116,6 @@ public class Input extends MouseAdapter {
                     board.selectedAction.execute(board, u, targetCol, targetRow);
                     board.endAction();
 
-                    board.selectedAction.execute(board, u, targetCol, targetRow);
                     u.spendEnergy(cost);
                     u.hasActedThisTurn = true;
                 }
@@ -134,5 +131,42 @@ public class Input extends MouseAdapter {
                 board.endTurn();
             }
         }
+
+        // ================= ALLY TARGET (BUFF / HEAL) =================
+        if (board.currentMode == Board.ActionMode.ALLY_TARGET) {
+
+            if (u.hasActedThisTurn) {
+                board.setActionMode(Board.ActionMode.NONE);
+                return;
+            }
+
+            if (board.selectedAction != null &&
+                board.selectedAction.canTarget(board, u, targetCol, targetRow)) {
+
+                int cost = board.selectedAction.getEnergyCost();
+
+                if (u.hasEnoughEnergy(cost)) {
+                    board.beginAction(u, board.selectedAction.getName());
+                    board.selectedAction.execute(board, u, targetCol, targetRow);
+                    board.endAction();
+
+                    u.spendEnergy(cost);
+                    u.hasActedThisTurn = true;
+                }
+            }
+
+            u.isWalking = false;
+            u.walkFrameIndex = 0;
+
+            board.selectedAction = null;
+            board.setActionMode(Board.ActionMode.NONE);
+
+            if (board.allCurrentTeamActed()) {
+                board.endTurn();
+            }
+
+            return;
+        }
+
     }
 }

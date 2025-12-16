@@ -17,6 +17,10 @@ public class Enlightenment implements Action {
         return t != null && t.team == u.team;
     }
 
+    public TargetType getTargetType() {
+        return TargetType.ALLY;
+    }
+
     public void execute(Board b, Unit u, int c, int r) {
         Unit t = b.getUnit(c, r);
         if (t instanceof Fighter)

@@ -21,6 +21,10 @@ public class LeviathanWill implements Action {
         return true; // self-cast ultimate
     }
 
+    public TargetType getTargetType() {
+        return TargetType.SELF;
+    }
+
     @Override
     public void execute(Board b, Unit u, int c, int r) {
 
