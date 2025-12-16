@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.*;
-import units.SelectedTeam;
+// import units.SelectedTeam;
 
 public class Menu extends JPanel {
 

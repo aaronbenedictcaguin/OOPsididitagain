@@ -15,11 +15,11 @@ public class Fighter extends Unit {
         this.name = "Rokurou Takahashi";
         this.role = "Fighter";
 
-        this.maxHp = 2400;
+        this.maxHp = 1700;
         this.curHp = maxHp;
-        this.atk = 300;
+        this.atk = 270;
         this.magicAtk = 50;
-        this.def = 450;
+        this.def = 270;
         this.energy = 2;
         this.maxEnergy = 4;
 

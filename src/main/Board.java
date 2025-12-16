@@ -27,6 +27,7 @@ public class Board extends JPanel {
         ATTACK
     }
 
+    private String logActionName = null;
     public Unit.Team currentTurn = Unit.Team.ALLY;
 
     public Action selectedAction;
@@ -48,7 +49,6 @@ public class Board extends JPanel {
     private StatusBoard statusBoard;
 
     private Unit logActor = null;
-    private String logActionName = null;
 
     public Board(ArrayList<Unit> selectedUnits) {
         this(selectedUnits, null);
@@ -286,7 +286,6 @@ public class Board extends JPanel {
     public void applyDamage(Unit target, int damage) {
         if (target == null) return;
 
-        int before = target.curHp;
         int finalDamage = Math.max(0, damage - target.def);
 
         target.takeDamage(finalDamage);
@@ -469,7 +468,7 @@ public class Board extends JPanel {
         }
 
         g2d.setColor(Color.WHITE);
-        String player = (currentTurn == Unit.Team.ALLY) ? "Player 1" : "Player 2";
+        // String player = (currentTurn == Unit.Team.ALLY) ? "Player 1" : "Player 2";
 
         g2d.setColor(Color.BLACK);
         for (int r = 0; r <= rows; r++) {

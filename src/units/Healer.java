@@ -15,11 +15,11 @@ public class Healer extends Unit {
         this.name = "Grand Eleanor";
         this.role = "Healer";
 
-        this.maxHp = 2200;
+        this.maxHp = 2300;
         this.curHp = maxHp;
-        this.atk = 130;
-        this.magicAtk = 200;
-        this.def = 540;
+        this.atk = 100;
+        this.magicAtk = 90;
+        this.def = 130;
         this.energy = 2;
         this.maxEnergy = 4;
 

@@ -15,11 +15,11 @@ public class Buffer extends Unit {
         this.name = "Genesis Sage";
         this.role = "Buffer";
 
-        this.maxHp = 1700;
+        this.maxHp = 1200;
         this.curHp = maxHp;
-        this.atk = 250;
-        this.magicAtk = 300;
-        this.def = 270;
+        this.atk = 100;
+        this.magicAtk = 120;
+        this.def = 90;
         this.energy = 2;
         this.maxEnergy = 6;
 
